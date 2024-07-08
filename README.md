@@ -6,7 +6,7 @@ Meal Spark is a tool for storing your favorite meal ideas for a quick way to spa
 
 When you discover a new meal you enjoy, you can quickly add the meal to your collection with a title, short description, ingredients, and photo. You can also tag your meals with a variety of categories for filtering later when searching for a specific type of meal.
 
-The app was made using React, Next.js, Node.js, Vercel Postgres, and Prisma. User authentication is provided by [**Clerk**](https://clerk.com/) and UI elements are styled using Tailwind and [**daisyUI**](https://daisyui.com/).
+The app was made using React, Next.js, Node.js, Vercel Postgres, and Prisma. User management is handled by [**Clerk**](https://clerk.com/) and UI elements are styled using Tailwind and [**daisyUI**](https://daisyui.com/).
 
 You can find the live app [**here**](https://meal-spark.vercel.app/) and try it out with the demo account.
 
