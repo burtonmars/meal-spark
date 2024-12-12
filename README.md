@@ -1,38 +1,13 @@
-# meal spark
+# Meal Spark
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+Meal Spark is a tool for storing your favorite meal ideas for a quick way to spark your memory when trying to decide what to cook for your next meal. This is a not a recipe app with detailed instructions; it is meant to serve as inspiration for what to cook next and displays a short description of the meal to jog your memory plus a list of ingredients to quickly add to your shopping list.
 
-First, run the development server:
+When you discover a new meal you enjoy, you can quickly add the meal to your collection with a title, short description, ingredients, and photo. You can also tag your meals with a variety of categories for filtering later when searching for a specific type of meal.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The app was made using React, Next.js, Node.js, Vercel Postgres, and Prisma. User management is handled by [**Clerk**](https://clerk.com/) and UI elements are styled using Tailwind and [**daisyUI**](https://daisyui.com/).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+You can find the live app [**here**](https://meal-spark.vercel.app/) and try it out with the demo account.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+![meal-spark snap](https://github.com/burtonmars/meal-spark/assets/34987913/791210f9-a2ad-4d62-9ec0-e4c493136367)
