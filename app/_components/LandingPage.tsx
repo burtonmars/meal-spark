@@ -4,23 +4,33 @@ import { SignInButton, useSignIn } from '@clerk/nextjs'
 import React from 'react'
 import { Image } from 'cloudinary-react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation'
 
 const LandingPage = () => {
-    const { signIn } = useSignIn();
+    const { isLoaded, signIn, setActive } = useSignIn();
+    const router = useRouter();
 
     const handleDemoLogin = async () => {
+        if (!isLoaded) return
+        
         try {
-            if (signIn) {  
-                await signIn.create({
-                    identifier: "mealspark.demo@yahoo.com",
-                    password: "Mealspark2024!",
-                });
+            const signInAttempt = await signIn.create({
+                identifier: 'mealspark.demo@yahoo.com',
+                password: 'Mealspark2024!',
+            });
+
+            // If sign-in process is complete, set the created session as active
+            // and redirect the user
+            if (signInAttempt.status === 'complete') {
+                await setActive({ session: signInAttempt.createdSessionId })
+                router.push('/')
+            } else {
+                // If the status is not complete, check why
+                console.error(JSON.stringify(signInAttempt, null, 2))
             }
-        } catch (error) {
-            console.error("Failed to log in:", error);
-        } finally {
-            window.location.href = '/';
-        }
+        } catch (err: any) {
+            console.error(JSON.stringify(err, null, 2))
+        };
     };
 
   const imagePath = 'https://res.cloudinary.com/dv54qhjnt/image/upload/v1712097910/salmon_dinner_qkzoe1.jpg'
