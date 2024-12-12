@@ -20,6 +20,8 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
   const [newMealIngredients, setNewMealIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [notes, setNotes] = useState('');
+  const [AiImage, setAiImage] = useState('');
+  const [loading, setLoading] = useState(false);
   const { 
     register,
     handleSubmit,
@@ -49,11 +51,11 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
     }
   };
 
-useEffect(() => {
-  if (newMealIngredients.length <= maxIngredients) {
-    clearErrors('ingredients');
-  }
-}, [newMealIngredients, maxIngredients, setError, clearErrors]);
+  useEffect(() => {
+    if (newMealIngredients.length <= maxIngredients) {
+      clearErrors('ingredients');
+    }
+  }, [newMealIngredients, maxIngredients, setError, clearErrors]);
 
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +99,34 @@ useEffect(() => {
   const removeIngredient = (indexToRemove: number) => {
     setNewMealIngredients(newMealIngredients.filter((_, index) => index !== indexToRemove));
   };
+
+  const generateImage = async (meal: Meal) => {
+    setLoading(true);
+
+    const payload = {
+      prompt: `${meal.mainTitle}, ${meal.secondaryTitle}`,
+      imageSize: { width: 1024, height: 1024 },
+      numImages: 1,
+      seed: 1234,
+      outputFormat: 'png',
+    };
+
+    try {
+      const response = await fetch('../api/image-gen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      console.log(data.output[0].url);
+      return data?.output[0]?.url;
+    } catch (error) {
+      console.error('Error generating images:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const onSubmit: SubmitHandler<Meal> = async (newMeal: Meal) => {
       setSaving(true);
@@ -104,6 +134,8 @@ useEffect(() => {
           if (imageFile) {
               const imageUrl = await uploadImageToCloudinary(imageFile);
               newMeal.imagePath = imageUrl;
+          } else {
+              newMeal.imagePath = await generateImage(newMeal);
           }
           newMeal.tags = tags.map((tag: any) => tag.value);
           newMeal.ingredients = newMealIngredients;
@@ -139,7 +171,7 @@ useEffect(() => {
           <div className='flex flex-col mb-4'>
             <label className="input input-bordered flex items-center gap-2">
               meal name
-              <input type="text" className="grow" id="mainTitle" {...register("mainTitle", { required: true, maxLength: 30 })}/>
+              <input type="text" className="grow" id="mainTitle" {...register("mainTitle", { required: true, maxLength: 35 })}/>
               {errors.mainTitle && errors.mainTitle.type === "required" && <span className='text-error-red'>This is required</span>}
               {errors.mainTitle && errors.mainTitle.type === "maxLength" && <span className='text-error-red'>Max length exceeded</span> }
             </label>
@@ -147,7 +179,7 @@ useEffect(() => {
           <div className='flex flex-col mb-4'>
             <label className="input input-bordered flex items-center gap-2">
               description
-              <input type="text" className="grow" id="secondaryTitle" {...register("secondaryTitle", { required: true, maxLength: 60 })}/>
+              <input type="text" className="grow" id="secondaryTitle" {...register("secondaryTitle", { required: true, maxLength: 250 })}/>
                 {errors.secondaryTitle && errors.secondaryTitle.type === "required" && <span className='text-error-red'>This is required</span>}
                 {errors.secondaryTitle && errors.secondaryTitle.type === "maxLength" && <span className='text-error-red'>Max length exceeded</span> }
             </label>

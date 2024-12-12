@@ -12,8 +12,8 @@ generator client {
 model Meal {
   id        Int      @id @default(autoincrement())
   userId String
-  mainTitle      String
-  secondaryTitle String
+  mainTitle      String @db.VarChar(35)
+  secondaryTitle String @db.VarChar(250)
   imagePath String
   tags String[]
   ingredients String[]

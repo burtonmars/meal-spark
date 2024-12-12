@@ -49,10 +49,6 @@ export async function updateMeal(meal: Meal): Promise<void> {
 
 export async function saveNewMeal(meal: Meal): Promise<void> {
   const { userId } = auth()
-  if (!meal.imagePath) {
-    meal.imagePath =
-      'https://res.cloudinary.com/dv54qhjnt/image/upload/v1713567949/pexels-yente-van-eynde-1263034-2403392_nv2ihw.jpg'
-  }
 
   if (userId) {
     try {
