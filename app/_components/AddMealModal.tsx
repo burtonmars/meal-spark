@@ -119,24 +119,44 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
       });
 
       const data = await response.json();
-      console.log(data.output[0].url);
-      return data?.output[0]?.url;
+      const theHiveImageUrl = data?.output[0]?.url;
+
+      if (theHiveImageUrl) {
+        const aiImageFile = await downloadAiImage(theHiveImageUrl);
+        if (aiImageFile) {
+          setImageFile(aiImageFile);
+        } else {
+          console.error('Failed to download AI image');
+        }
+      }
     } catch (error) {
       console.error('Error generating images:', error);
     } finally {
       setLoading(false);
     }
   };
+
   
   const onSubmit: SubmitHandler<Meal> = async (newMeal: Meal) => {
       setSaving(true);
       try {
-          if (imageFile) {
-              const imageUrl = await uploadImageToCloudinary(imageFile);
-              newMeal.imagePath = imageUrl;
-          } else {
-              newMeal.imagePath = await generateImage(newMeal);
+          let currentImageFile = imageFile;
+          let imageUrl  = 'https://res.cloudinary.com/dv54qhjnt/image/upload/v1713567949/pexels-yente-van-eynde-1263034-2403392_nv2ihw.jpg';
+
+          // Generate image if not uploaded by user
+          if (!currentImageFile) {
+              await generateImage(newMeal);
+              if (!imageFile) {
+                  throw new Error("Failed to generate image file.");
+              }
+              currentImageFile = imageFile;
           }
+
+          if (currentImageFile) {
+            imageUrl = await uploadImageToCloudinary(currentImageFile);
+          }
+
+          newMeal.imagePath = imageUrl;
           newMeal.tags = tags.map((tag: any) => tag.value);
           newMeal.ingredients = newMealIngredients;
           newMeal.notes = notes;
@@ -150,6 +170,25 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
           navigateHome();
       }
   };
+
+  async function downloadAiImage(imageUrl: string): Promise<File | null> {
+    try {
+      const response = await fetch(imageUrl);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const fileName = imageUrl.split('/').pop() || 'downloaded-image.png'; // Extract filename or use a default
+      const file = new File([blob], fileName, { type: blob.type });
+
+      return file;
+    } catch (error) {
+      console.error('Error downloading AI image:', error);
+      return null;
+    }
+  }
 
   const resetForm = () => {
     reset();
