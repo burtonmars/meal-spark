@@ -4,9 +4,10 @@ interface ImageUrlProps {
     setImageFile: (image: File | null) => void;
     htmlId?: string;
     label?: string;
+    required?: boolean;
 }
 
-const ImageUpload = ({setImageFile, htmlId, label}: ImageUrlProps) => {
+const ImageUpload = ({setImageFile, htmlId, label, required}: ImageUrlProps) => {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {

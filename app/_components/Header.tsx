@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-import { saveNewMeal } from '../_lib/data';
 import { Meal } from '../_lib/definitions';
 import SearchBar from './SearchBar';
 import { set } from 'react-hook-form';
@@ -76,7 +75,7 @@ const Header = ({ userId, meals }: HeaderProps) => {
                 {meals.length >= maxDemoMealCount && 
                 <span className='text-red-500 text-sm ml-2'>You have reached the maximum number of meals for the demo account.</span>}
                 <dialog id="add_meal_modal" className="modal" open={showAddModal}>
-                    <AddMealModal saveNewMeal={saveNewMeal} closeAddMealModal={() => setShowAddModal(false)} />
+                    <AddMealModal closeAddMealModal={() => setShowAddModal(false)} />
                 </dialog>
             </div>
             <div className="hidden w-full md:flex justify-center">

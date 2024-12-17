@@ -5,25 +5,27 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { v4 as uuidv4 } from 'uuid';
 
 import { Meal, MealTag, mealTags } from '../_lib/definitions';
+import { saveNewMeal } from '../_lib/data';
 import { navigateHome } from '../_lib/actions';
 import ImageUpload from './ImageUpload';
+import ChooseAiImageModal from './ChooseAiImageModal';
 
-interface AddMealModalProps { 
-  saveNewMeal: (newMeal: any) => void;
+interface AddMealModalProps {
   closeAddMealModal: () => void;
 }
 
 const animatedComponents = makeAnimated();
-const aiImageGenText = 'upload an image or leave this blank to let us generate one for you';
+const aiImageGenText = 'upload an image or let us generate one for you';
 
 
-const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
+const AddMealModal = ({ closeAddMealModal}: AddMealModalProps) => {
   const [tags, setMealTags] = useState<MultiValue<MealTag>>([]);
   const [saving, setSaving] = useState(false);
   const [newMealIngredients, setNewMealIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState('');
+  const [showChooseImageModal, setShowChooseImageModal] = useState(false);
   const { 
     register,
     handleSubmit,
@@ -114,14 +116,14 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
         }
     }
 
-    const generateImage = async (meal: Meal): Promise<File | null> => {
+    const generateImages = async (meal: Meal): Promise<File[]> => {
         setLoading(true);
-        let aiImageFile: File | null = null;
+        let aiImageFiles: File[] = [];
 
         const payload = {
             prompt: `${meal.mainTitle}, ${meal.secondaryTitle}`,
             imageSize: { width: 1024, height: 1024 },
-            numImages: 1,
+            numImages: 2,
             outputFormat: 'png',
         };
 
@@ -133,12 +135,16 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
             });
 
             const data = await response.json();
-            const theHiveImageUrl = data?.output[0]?.url;
+            const theHiveImages = data?.output;
 
-            if (theHiveImageUrl) {
-              aiImageFile = await downloadAiImage(theHiveImageUrl);
-              if (!aiImageFile) {
+            if (theHiveImages) {
+              for (let image of theHiveImages) {
+                let imageFile = await downloadAiImage(image.url);
+                if (imageFile) { 
+                  aiImageFiles.push(imageFile);
+                } else {
                   console.error('Failed to download AI image');
+                }
               }
             }
         } catch (error) {
@@ -146,7 +152,7 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
         } finally {
             setLoading(false);
         }
-        return aiImageFile;
+        return aiImageFiles;
     };
 
   const onSubmit: SubmitHandler<Meal> = async (newMeal: Meal) => {
@@ -155,14 +161,14 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
           let imageUrl  = 'https://res.cloudinary.com/dv54qhjnt/image/upload/v1713567949/pexels-yente-van-eynde-1263034-2403392_nv2ihw.jpg';
 
           // Generate image if not uploaded by user
-          console.log(imageFile)
           if (!imageFile) {
-              const aiImageFile = await generateImage(newMeal);
-              if (!aiImageFile) {
-                  throw new Error("Failed to generate image file.");
+              const aiImageFiles = await generateImages(newMeal);
+              if (!aiImageFiles.length) {
+                  throw new Error("Failed to generate image files.");
               }
-              imageUrl = await uploadImageToCloudinary(aiImageFile);
-          } else imageUrl = await uploadImageToCloudinary(imageFile);
+              let aiImageUrls = await Promise.all(aiImageFiles.map(async (file) => await uploadImageToCloudinary(file)));
+              imageUrl = aiImageUrls[0];
+            } else imageUrl = await uploadImageToCloudinary(imageFile);
 
           newMeal.imagePath = imageUrl;
           newMeal.tags = tags.map((tag: any) => tag.value);
@@ -240,8 +246,13 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
               id='tags'
             />
           </div>
-          <div className='flex flex-col mb-4'>
-            <ImageUpload setImageFile={ setImageFile } htmlId="mealImage" label={aiImageGenText}/>
+          <div className='flex flex-col justify-center mb-4'>
+            <div className='flex flex-col mb-4'>
+              <ImageUpload required={true} setImageFile={ setImageFile } htmlId="mealImage" label={aiImageGenText}/>
+            </div>
+            <div className='flex flex-col mb-4'>
+              <button onClick={() => setShowChooseImageModal(true)} className='btn btn-secondary w-48'>generate image</button>
+          </div>
           </div>
           <div className='flex flex-col'>
             <label className="form-control">
@@ -255,6 +266,11 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
             </div>
           </div>
         </form>
+        <div className='flex h-full w-full md:w-full items-center justify-center'>
+          <dialog id="add_meal_modal" className="modal" open={showChooseImageModal}>
+            <ChooseAiImageModal setImageFile={setImageFile} closeChooseImageModal={() => setShowChooseImageModal(false)} />
+          </dialog>
+        </div>
     </div>
   );
 };
