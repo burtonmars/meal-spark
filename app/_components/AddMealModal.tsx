@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Meal, MealTag, mealTags } from '../_lib/definitions';
 import { navigateHome } from '../_lib/actions';
+import ImageUpload from './ImageUpload';
 
 interface AddMealModalProps { 
   saveNewMeal: (newMeal: any) => void;
@@ -13,15 +14,16 @@ interface AddMealModalProps {
 }
 
 const animatedComponents = makeAnimated();
+const aiImageGenText = 'upload an image or leave this blank to let us generate one for you';
+
 
 const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
   const [tags, setMealTags] = useState<MultiValue<MealTag>>([]);
   const [saving, setSaving] = useState(false);
   const [newMealIngredients, setNewMealIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [notes, setNotes] = useState('');
-  const [AiImage, setAiImage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [notes, setNotes] = useState('');
   const { 
     register,
     handleSubmit,
@@ -57,31 +59,6 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
     }
   }, [newMealIngredients, maxIngredients, setError, clearErrors]);
 
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-    }
-  };
-
-  const uploadImageToCloudinary = async (image: Blob) => {
-    const formData = new FormData();
-    formData.append('file', image);
-    formData.append('upload_preset', 'ml_default');
-
-    const response = await fetch(`https://api.cloudinary.com/v1_1/dv54qhjnt/image/upload`, {
-        method: 'POST',
-        body: formData,
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        return data.secure_url;
-    }
-
-    throw new Error('Image upload failed');
-  };
-
   const addIngredient = () => {
     const ingredientInput = document.getElementById('ingredient') as HTMLInputElement;
     if (ingredientInput && ingredientInput.value.trim() !== '') {
@@ -100,61 +77,92 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
     setNewMealIngredients(newMealIngredients.filter((_, index) => index !== indexToRemove));
   };
 
-  const generateImage = async (meal: Meal) => {
-    setLoading(true);
+  const uploadImageToCloudinary = async (image: Blob) => {
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('upload_preset', 'ml_default');
 
-    const payload = {
-      prompt: `${meal.mainTitle}, ${meal.secondaryTitle}`,
-      imageSize: { width: 1024, height: 1024 },
-      numImages: 1,
-      seed: 1234,
-      outputFormat: 'png',
+        const response = await fetch(`https://api.cloudinary.com/v1_1/dv54qhjnt/image/upload`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.secure_url;
+        }
+
+        throw new Error('Image upload failed');
+    };
+    
+    const downloadAiImage = async (imageUrl: string): Promise<File | null> => {
+        try {
+          const response = await fetch(imageUrl);
+
+          if (!response.ok) {
+              throw new Error(`Failed to fetch image: ${response.statusText}`);
+          }
+
+          const blob = await response.blob();
+          const fileName = imageUrl.split('/').pop() || 'downloaded-image.png'; // Extract filename or use a default
+          const file = new File([blob], fileName, { type: blob.type });
+
+          return file;
+        } catch (error) {
+        console.error('Error downloading AI image:', error);
+        return null;
+        }
+    }
+
+    const generateImage = async (meal: Meal): Promise<File | null> => {
+        setLoading(true);
+        let aiImageFile: File | null = null;
+
+        const payload = {
+            prompt: `${meal.mainTitle}, ${meal.secondaryTitle}`,
+            imageSize: { width: 1024, height: 1024 },
+            numImages: 1,
+            outputFormat: 'png',
+        };
+
+        try {
+            const response = await fetch('../api/image-gen', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+            const theHiveImageUrl = data?.output[0]?.url;
+
+            if (theHiveImageUrl) {
+              aiImageFile = await downloadAiImage(theHiveImageUrl);
+              if (!aiImageFile) {
+                  console.error('Failed to download AI image');
+              }
+            }
+        } catch (error) {
+            console.error('Error generating images:', error);
+        } finally {
+            setLoading(false);
+        }
+        return aiImageFile;
     };
 
-    try {
-      const response = await fetch('../api/image-gen', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      const theHiveImageUrl = data?.output[0]?.url;
-
-      if (theHiveImageUrl) {
-        const aiImageFile = await downloadAiImage(theHiveImageUrl);
-        if (aiImageFile) {
-          setImageFile(aiImageFile);
-        } else {
-          console.error('Failed to download AI image');
-        }
-      }
-    } catch (error) {
-      console.error('Error generating images:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  
   const onSubmit: SubmitHandler<Meal> = async (newMeal: Meal) => {
       setSaving(true);
       try {
-          let currentImageFile = imageFile;
           let imageUrl  = 'https://res.cloudinary.com/dv54qhjnt/image/upload/v1713567949/pexels-yente-van-eynde-1263034-2403392_nv2ihw.jpg';
 
           // Generate image if not uploaded by user
-          if (!currentImageFile) {
-              await generateImage(newMeal);
-              if (!imageFile) {
+          console.log(imageFile)
+          if (!imageFile) {
+              const aiImageFile = await generateImage(newMeal);
+              if (!aiImageFile) {
                   throw new Error("Failed to generate image file.");
               }
-              currentImageFile = imageFile;
-          }
-
-          if (currentImageFile) {
-            imageUrl = await uploadImageToCloudinary(currentImageFile);
-          }
+              imageUrl = await uploadImageToCloudinary(aiImageFile);
+          } else imageUrl = await uploadImageToCloudinary(imageFile);
 
           newMeal.imagePath = imageUrl;
           newMeal.tags = tags.map((tag: any) => tag.value);
@@ -170,25 +178,6 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
           navigateHome();
       }
   };
-
-  async function downloadAiImage(imageUrl: string): Promise<File | null> {
-    try {
-      const response = await fetch(imageUrl);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.statusText}`);
-      }
-
-      const blob = await response.blob();
-      const fileName = imageUrl.split('/').pop() || 'downloaded-image.png'; // Extract filename or use a default
-      const file = new File([blob], fileName, { type: blob.type });
-
-      return file;
-    } catch (error) {
-      console.error('Error downloading AI image:', error);
-      return null;
-    }
-  }
 
   const resetForm = () => {
     reset();
@@ -252,14 +241,7 @@ const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
             />
           </div>
           <div className='flex flex-col mb-4'>
-            <label htmlFor="mealImage" className='mb-2'>image</label>
-            <input 
-                id="mealImage"
-                type="file"
-                accept=".jpg, .png, .gif, .jpeg"
-                className="file-input file-input-bordered file-input-secondary file-input-sm w-full max-w-xs"
-                onChange={handleImageChange}
-              />
+            <ImageUpload setImageFile={ setImageFile } htmlId="mealImage" label={aiImageGenText}/>
           </div>
           <div className='flex flex-col'>
             <label className="form-control">

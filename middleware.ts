@@ -3,9 +3,17 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 const isProtectedRoute = createRouteMatcher(['/dashboard(.*)'])
 
 export default clerkMiddleware((auth, request) => {
-  if (isProtectedRoute(request)) auth().protect()
+  try {
+    if (isProtectedRoute(request)) auth().protect()
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Clerk middleware error:', error.message)
+    } else {
+      console.error('Clerk middleware error:', error)
+    }
+  }
 })
 
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/(api|trpc)(.*)'],
+  matcher: ['/(.*)'],
 }
