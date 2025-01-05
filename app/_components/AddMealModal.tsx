@@ -24,6 +24,7 @@ const AddMealModal = ({ closeAddMealModal}: AddMealModalProps) => {
   const [newMealIngredients, setNewMealIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [disableGenImageBtn, setdisableGenImageBtn] = useState(false);
   const [notes, setNotes] = useState('');
   const [showChooseImageModal, setShowChooseImageModal] = useState(false);
   const { 
@@ -60,6 +61,10 @@ const AddMealModal = ({ closeAddMealModal}: AddMealModalProps) => {
       clearErrors('ingredients');
     }
   }, [newMealIngredients, maxIngredients, setError, clearErrors]);
+
+  useEffect(() => {
+    setdisableGenImageBtn(!!imageFile || saving);
+  }, [imageFile, saving]);
 
   const addIngredient = () => {
     const ingredientInput = document.getElementById('ingredient') as HTMLInputElement;
@@ -251,7 +256,7 @@ const AddMealModal = ({ closeAddMealModal}: AddMealModalProps) => {
               <ImageUpload required={true} setImageFile={ setImageFile } htmlId="mealImage" label={aiImageGenText}/>
             </div>
             <div className='flex flex-col mb-4'>
-              <button onClick={() => setShowChooseImageModal(true)} className='btn btn-secondary w-48'>generate image</button>
+              <button onClick={() => setShowChooseImageModal(true)} disabled={disableGenImageBtn} className='btn btn-secondary w-1/4'>generate image</button>
           </div>
           </div>
           <div className='flex flex-col'>
@@ -261,8 +266,13 @@ const AddMealModal = ({ closeAddMealModal}: AddMealModalProps) => {
                 </div>
                 <textarea className="textarea textarea-bordered h-24" id='meal_modal_notes' onChange={handleChange}></textarea>
             </label>
-            <div className='flex justify-end mt-6'>
-                <button type='submit' className='btn btn-primary w-24' disabled={saving}>{saving ? 'saving...' : 'save'}</button>
+            <div className='flex justify-end mt-6 gap-4'>
+               <div>
+                  <button className='btn btn-outline btn-accent w-24' onClick={resetForm} disabled={saving}>cancel</button>
+              </div>
+              <div>
+                  <button type='submit' className='btn btn-primary w-24' disabled={saving}>{saving ? 'saving...' : 'save'}</button>
+              </div>
             </div>
           </div>
         </form>
