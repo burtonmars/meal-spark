@@ -255,9 +255,9 @@ const AddMealModal = ({ closeAddMealModal}: AddMealModalProps) => {
             <div className='flex flex-col mb-4'>
               <ImageUpload required={true} setImageFile={ setImageFile } htmlId="mealImage" label={aiImageGenText}/>
             </div>
-            <div className='flex flex-col mb-4'>
+            {/* <div className='flex flex-col mb-4'>
               <button onClick={() => setShowChooseImageModal(true)} disabled={disableGenImageBtn} className='btn btn-secondary w-1/4'>generate image</button>
-          </div>
+            </div> */}
           </div>
           <div className='flex flex-col'>
             <label className="form-control">

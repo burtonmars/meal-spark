@@ -40,12 +40,12 @@ const ChooseAiImageModal = ({ closeChooseImageModal, setImageFile }: ChooseAiIma
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex justify-center items-center">
-            <div>
+            {/* <div>
               <Image src='' alt='first AI generated image'></Image>
             </div>
             <div>
               <Image src='' alt='second AI generated image'></Image>
-            </div>
+            </div> */}
           </div>
           <div className="flex justify-between items-center">
               <button type='submit' className='btn btn-primary w-24' disabled={saving}>{saving ? 'saving...' : 'okay'}</button>
