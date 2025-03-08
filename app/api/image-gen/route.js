@@ -33,6 +33,7 @@ export async function POST(req) {
     }
 
     const data = await response.json()
+    console.log(response.headers.get('Location'))
     return NextResponse.json(data)
   } catch (error) {
     console.error(error)
