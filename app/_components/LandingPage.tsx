@@ -19,13 +19,10 @@ const LandingPage = () => {
                 password: 'Mealspark2024!',
             });
 
-            // If sign-in process is complete, set the created session as active
-            // and redirect the user
             if (signInAttempt.status === 'complete') {
                 await setActive({ session: signInAttempt.createdSessionId })
-                router.push('/')
+                router.refresh()
             } else {
-                // If the status is not complete, check why
                 console.error(JSON.stringify(signInAttempt, null, 2))
             }
         } catch (err: any) {
