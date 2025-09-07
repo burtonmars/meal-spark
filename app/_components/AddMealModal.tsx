@@ -97,13 +97,39 @@ useEffect(() => {
   const removeIngredient = (indexToRemove: number) => {
     setNewMealIngredients(newMealIngredients.filter((_, index) => index !== indexToRemove));
   };
+
+  const generateImage = async (prompt: string) => {
+    try {
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt, imageSize: '512x512', numImages: 1, outputFormat: 'png' }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate image');
+      }
+
+      const data = await response.json();
+      console.log(data);
+      return data.image_url; // Adjust based on API response
+    } catch (error) {
+      console.error('Image generation error:', error);
+      return null;
+    }
+  };
+
   
   const onSubmit: SubmitHandler<Meal> = async (newMeal: Meal) => {
       setSaving(true);
       try {
           if (imageFile) {
-              const imageUrl = await uploadImageToCloudinary(imageFile);
-              newMeal.imagePath = imageUrl;
+            const imageUrl = await uploadImageToCloudinary(imageFile);
+            newMeal.imagePath = imageUrl;
+          } else {
+            newMeal.imagePath = await generateImage(`${newMeal.mainTitle} + ' ' + ${newMeal.secondaryTitle}`);
           }
           newMeal.tags = tags.map((tag: any) => tag.value);
           newMeal.ingredients = newMealIngredients;
