@@ -37,7 +37,7 @@ export default async function RootLayout({
           <body className={`${inter.className} antialiased`}>
             <div className='w-full h-full flex flex-col'>
               <div className='flex justify-center mt-4 md:mt-6'>
-                <Header userId={userId} meals={meals}/>
+                <Header userId={userId}/>
               </div>
               <div>
                 <SignedIn>

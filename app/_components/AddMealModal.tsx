@@ -6,17 +6,17 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Meal, MealTag, mealTags } from '../_lib/definitions';
 import { navigateHome } from '../_lib/actions';
+import { useAddMeal } from '../_lib/hooks/useMeals';
 
 interface AddMealModalProps { 
-  saveNewMeal: (newMeal: any) => void;
   closeAddMealModal: () => void;
 }
 
 const animatedComponents = makeAnimated();
 
-const AddMealModal = ({saveNewMeal, closeAddMealModal}: AddMealModalProps) => {
+const AddMealModal = ({closeAddMealModal}: AddMealModalProps) => {
+  const addMealMutation = useAddMeal();
   const [tags, setMealTags] = useState<MultiValue<MealTag>>([]);
-  const [saving, setSaving] = useState(false);
   const [newMealIngredients, setNewMealIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [notes, setNotes] = useState('');
@@ -99,23 +99,27 @@ useEffect(() => {
   };
   
   const onSubmit: SubmitHandler<Meal> = async (newMeal: Meal) => {
-      setSaving(true);
       try {
+          let imageUrl = '';
           if (imageFile) {
-              const imageUrl = await uploadImageToCloudinary(imageFile);
-              newMeal.imagePath = imageUrl;
+              imageUrl = await uploadImageToCloudinary(imageFile);
           }
-          newMeal.tags = tags.map((tag: any) => tag.value);
-          newMeal.ingredients = newMealIngredients;
-          newMeal.notes = notes;
-          await saveNewMeal(newMeal);
+          
+          const mealData = {
+              mainTitle: newMeal.mainTitle,
+              secondaryTitle: newMeal.secondaryTitle,
+              imagePath: imageUrl,
+              tags: tags.map((tag: any) => tag.value),
+              ingredients: newMealIngredients,
+              notes: notes,
+          };
+          
+          await addMealMutation.mutateAsync(mealData);
           resetForm();
           closeAddMealModal();
+          navigateHome();
       } catch (error) {
           console.error("An error occurred:", error);
-      } finally {
-          setSaving(false);
-          navigateHome();
       }
   };
 
@@ -198,7 +202,7 @@ useEffect(() => {
                 <textarea className="textarea textarea-bordered h-24" id='meal_modal_notes' onChange={handleChange}></textarea>
             </label>
             <div className='flex justify-end mt-6'>
-                <button type='submit' className='btn btn-primary w-24' disabled={saving}>{saving ? 'saving...' : 'save'}</button>
+                <button type='submit' className='btn btn-primary w-24' disabled={addMealMutation.isPending}>{addMealMutation.isPending ? 'saving...' : 'save'}</button>
             </div>
           </div>
         </form>

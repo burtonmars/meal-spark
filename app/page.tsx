@@ -1,15 +1,12 @@
-import React from 'react';
+'use client';
 
-import { fetchMeals } from './_lib/data';
-import { Meal } from './_lib/definitions';
+import React from 'react';
 import MealsCollection from './_components/MealsCollection';
 
-export default async function Page() {
-  const meals: Meal[] = await fetchMeals();
-  
+export default function Page() {
   return (
     <div className='w-full h-full mt-10 mb-36 md:mt-0'>
-        <MealsCollection meals={meals} tag={null}></MealsCollection>
+        <MealsCollection tag={null}></MealsCollection>
     </div>
   )
 }

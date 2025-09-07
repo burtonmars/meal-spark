@@ -3,32 +3,36 @@
 import React, { useState, useEffect } from 'react'
 
 import MealCard from './MealCard'
-import { deleteMeal } from '../_lib/data'
-import { Meal } from '../_lib/definitions'
+import { useMeals, useDeleteMeal } from '../_lib/hooks/useMeals'
 
 interface MealsCollectionProps {
-    meals: Meal[]
     tag: string | null
 }
 
-const MealsCollection = ({ meals, tag }: MealsCollectionProps) => {
+const MealsCollection = ({ tag }: MealsCollectionProps) => {
+  const { data: allMeals = [], isLoading } = useMeals();
+  const deleteMealMutation = useDeleteMeal();
   const focussedTag = tag ? tag : null;
-  const [loading, setLoading] = useState(true);
   const [noMeals, setNoMeals] = useState(false);
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
+  // Filter meals by tag if provided
+  const meals = tag ? allMeals.filter(meal => meal.tags.includes(tag)) : allMeals;
 
   useEffect(() => {
-    if (meals.length === 0) {
+    if (meals.length === 0 && !isLoading) {
       setNoMeals(true);
+    } else {
+      setNoMeals(false);
     }
-  }, [meals]);
+  }, [meals, isLoading]);
+
+  const handleDeleteMeal = async (id: string) => {
+    await deleteMealMutation.mutateAsync(id);
+  };
 
   return (
     <>
-        {loading ? 
+        {isLoading ? 
         <div className='flex my-36 h-96 justify-center items-center'>
             <span className="loading loading-ring loading-lg"></span>
         </div> :
@@ -40,19 +44,19 @@ const MealsCollection = ({ meals, tag }: MealsCollectionProps) => {
             </div> :
             <>
                 <div className='flex md:hidden flex-col justify-center items-center'>
-                    {meals.map((meal: Meal) => <MealCard
+                    {meals.map((meal) => <MealCard
                         key={meal.id}
                         meal={meal}
-                        deleteMeal={deleteMeal}
+                        deleteMeal={handleDeleteMeal}
                         focussedTag={focussedTag} />
                     )}
                 </div><div className="hidden w-full h-full md:flex justify-center">
                     <div className='w-full xl:w-4/5 lg:mt-36 grid justify-center gap-12'>
                         <div className='grid grid-cols-mealCards md:grid-cols-mealCardsMd xl:grid-cols-mealCardsXl gap-y-10 xl:gap-y-16 w-fit'>
-                            {meals.map((meal: Meal) => <MealCard
+                            {meals.map((meal) => <MealCard
                                 key={meal.id}
                                 meal={meal}
-                                deleteMeal={deleteMeal}
+                                deleteMeal={handleDeleteMeal}
                                 focussedTag={focussedTag} />
                             )}
                         </div>

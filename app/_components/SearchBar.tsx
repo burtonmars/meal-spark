@@ -5,13 +5,14 @@ import TextField from '@mui/material/TextField';
 
 import { Meal } from '../_lib/definitions';
 import ViewMealModal from './ViewMealModal';
+import { useMeals } from '../_lib/hooks/useMeals';
 
 interface SearchBarProps {
-    meals: Meal[];
     userId: string | null;
 }
 
-const SearchBar = ({ meals, userId }: SearchBarProps) => {
+const SearchBar = ({ userId }: SearchBarProps) => {
+  const { data: meals = [] } = useMeals();
   const wrapperRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
