@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import Select, { MultiValue } from 'react-select';
-import makeAnimated from 'react-select/animated';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,15 +6,15 @@ import { Meal, MealTag, mealTags } from '../_lib/definitions';
 import { navigateHome } from '../_lib/actions';
 import { useAddMeal } from '../_lib/hooks/useMeals';
 
-interface AddMealModalProps { 
+interface AddMealModalProps {
   closeAddMealModal: () => void;
 }
 
-const animatedComponents = makeAnimated();
-
 const AddMealModal = ({closeAddMealModal}: AddMealModalProps) => {
   const addMealMutation = useAddMeal();
-  const [tags, setMealTags] = useState<MultiValue<MealTag>>([]);
+  const [tags, setMealTags] = useState<MealTag[]>([]);
+  const [tagsOpen, setTagsOpen] = useState(false);
+  const tagsRef = useRef<HTMLDivElement>(null);
   const [newMealIngredients, setNewMealIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [notes, setNotes] = useState('');
@@ -28,6 +26,24 @@ const AddMealModal = ({closeAddMealModal}: AddMealModalProps) => {
     clearErrors,
     formState: { errors }
   } = useForm<Meal>();
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (tagsRef.current && !tagsRef.current.contains(event.target as Node)) {
+        setTagsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleTag = (tag: MealTag) => {
+    setMealTags(prev =>
+      prev.some(t => t.value === tag.value)
+        ? prev.filter(t => t.value !== tag.value)
+        : [...prev, tag]
+    );
+  };
 
   const maxIngredients = 18;
   const numberOfColumns = Math.ceil(newMealIngredients.length / 8);
@@ -173,16 +189,42 @@ useEffect(() => {
               </ul>
             </div>
           </div>
-          <div className='flex flex-col mb-4'>
-            <Select
-              closeMenuOnSelect={false}
-              components={animatedComponents}
-              isMulti
-              options={mealTags}
-              onChange={(tag) => setMealTags(tag as any)}
-              value={tags}
-              id='tags'
-            />
+          <div className='flex flex-col mb-4' ref={tagsRef}>
+            <div
+              className='input input-bordered flex items-center flex-wrap gap-1 cursor-pointer min-h-12 h-auto py-2'
+              onClick={() => setTagsOpen(prev => !prev)}
+            >
+              {tags.length === 0 && <span className='text-gray-400'>Select tags...</span>}
+              {tags.map(tag => (
+                <span key={tag.value} className='badge badge-primary gap-1'>
+                  {tag.label}
+                  <button
+                    type='button'
+                    className='text-xs'
+                    onClick={(e) => { e.stopPropagation(); toggleTag(tag); }}
+                  >
+                    x
+                  </button>
+                </span>
+              ))}
+            </div>
+            {tagsOpen && (
+              <ul className='menu bg-base-100 shadow-lg rounded-box mt-1 max-h-48 overflow-y-auto flex-nowrap z-10'>
+                {mealTags.map(tag => (
+                  <li key={tag.value}>
+                    <label className='flex items-center gap-2 cursor-pointer'>
+                      <input
+                        type='checkbox'
+                        className='checkbox checkbox-sm checkbox-primary'
+                        checked={tags.some(t => t.value === tag.value)}
+                        onChange={() => toggleTag(tag)}
+                      />
+                      {tag.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div className='flex flex-col mb-4'>
             <label htmlFor="mealImage" className='mb-2'>image</label>

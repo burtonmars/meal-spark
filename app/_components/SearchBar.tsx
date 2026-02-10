@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react'
-import TextField from '@mui/material/TextField';
 
 import { Meal } from '../_lib/definitions';
 import ViewMealModal from './ViewMealModal';
@@ -47,11 +46,10 @@ const SearchBar = ({ userId }: SearchBarProps) => {
 
   return (
     <div className='relative' ref={wrapperRef}>
-        <TextField
-            id="outlined-basic"
-            variant="outlined"
-            fullWidth
-            label="Search"
+        <input
+            type="text"
+            placeholder="Search"
+            className="input input-bordered w-full"
             onChange={inputHandler}
             disabled={!userId}
             onFocus={() => setIsDropdownVisible(true)}

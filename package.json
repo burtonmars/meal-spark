@@ -13,9 +13,6 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.0.0-beta.46",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
-    "@mui/material": "^5.15.15",
     "@prisma/client": "^5.12.1",
     "@tanstack/react-query": "^5.32.0",
     "@tanstack/react-query-devtools": "^5.32.0",
@@ -23,11 +20,10 @@
     "@vercel/postgres": "^0.7.2",
     "cloudinary": "^2.1.0",
     "framer-motion": "^11.1.9",
-    "next": "^14.2.2",
+    "next": "^14.2.35",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.1",
-    "react-select": "^5.8.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
