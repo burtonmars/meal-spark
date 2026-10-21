@@ -8,6 +8,7 @@ import { navigateHome } from '../_lib/actions';
 import Link from 'next/link';
 import AreYouSureModal from './AreYouSureModal';
 import { motion } from 'framer-motion';
+import { isDemoMeal } from '../_lib/demo';
 
 interface MealCardProps {
     meal: Meal;
@@ -19,13 +20,8 @@ const MealCard = ({meal, deleteMeal, focussedTag}: MealCardProps) => {
     const [showModal, setShowModal] = useState(false);
     const [saving, setSaving] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const demoMealIds = [74, 75, 77];
         
     const handleDelete = async () => {
-        if (demoMealIds.includes(meal.id)) {
-            alert('You cannot delete this meal because it is a demo meal. Please create your own meal to delete.');
-            return;
-        }
         setSaving(true);
         try {
             await deleteMeal(meal.id);
@@ -40,7 +36,7 @@ const MealCard = ({meal, deleteMeal, focussedTag}: MealCardProps) => {
     
   return (
     <motion.div 
-        className="card card-sm mb-12 md:mb-0 mx-12 w-5/6 lg:w-96 bg-base-100 shadow-xl h-[550px]"
+        className="card card-sm mb-12 md:mb-0 mx-12 md:mx-0 w-5/6 md:w-full bg-base-100 shadow-xl h-[550px]"
         initial={{
             opacity: 0,
             scale: 0.8
@@ -62,14 +58,14 @@ const MealCard = ({meal, deleteMeal, focussedTag}: MealCardProps) => {
                 <h3>{meal.secondaryTitle}</h3>
             </div>
             <div className='h-1/4 overflow-auto'>
-                <ul className='flex flex-wrap gap-2'>
+                <ul className='flex flex-wrap gap-x-3 gap-y-2.5'>
                     {meal.tags.map((tag) => (
                         focussedTag && tag === focussedTag ? (
-                            <li key={tag} className='badge mx-1 h-6 bg-primary border-none'>
+                            <li key={tag} className='badge h-6 bg-primary border-none'>
                                 <Link href={`/filtered-meals/${tag}`}>{tag}</Link>
                             </li>
                         ) : (
-                            <li key={tag} className='badge mx-1 h-6 bg-accent border-none'>
+                            <li key={tag} className='badge h-6 bg-accent border-none'>
                                 <Link href={`/filtered-meals/${tag}`}>{tag}</Link>
                             </li>
                         )
@@ -78,9 +74,7 @@ const MealCard = ({meal, deleteMeal, focussedTag}: MealCardProps) => {
             </div>
             <div className="card-actions mt-2 p-4">
                 <div className='flex w-full justify-between'>
-                    <form action={navigateHome}>
-                        <button onClick={() => setShowDeleteModal(true)} className='btn btn-outline btn-error w-24' disabled={saving}>{saving ? 'deleting...' : 'delete'}</button>
-                    </form>
+                    <button type='button' onClick={() => setShowDeleteModal(true)} className='btn btn-outline btn-error w-24' disabled={saving}>{saving ? 'deleting...' : 'delete'}</button>
                     <button className="btn btn-secondary w-30" onClick={() => setShowModal(true)}>view meal</button>
                     <dialog id="view_meal_modal" className="modal" open={showModal}>
                         <ViewMealModal meal={meal} closeModal={() => setShowModal(false)} />
@@ -89,7 +83,15 @@ const MealCard = ({meal, deleteMeal, focussedTag}: MealCardProps) => {
             </div>
         </div>
         <dialog id="delete_meal_modal" className="modal" open={showDeleteModal}>
-            <AreYouSureModal handleDelete={handleDelete} setShowDeleteModal={setShowDeleteModal} mealTitle={meal.mainTitle}/>
+            {isDemoMeal(meal.id) ? (
+                <div className="modal-box flex flex-col w-4/5 gap-6 justify-center items-center text-center">
+                    <h3 className="font-bold text-lg">demo meals can&apos;t be deleted</h3>
+                    <p>add your own meal to try deleting one</p>
+                    <button className='btn' onClick={() => setShowDeleteModal(false)}>ok</button>
+                </div>
+            ) : (
+                <AreYouSureModal handleDelete={handleDelete} setShowDeleteModal={setShowDeleteModal} mealTitle={meal.mainTitle}/>
+            )}
         </dialog>
     </motion.div>
   );

@@ -30,7 +30,7 @@ const LandingPage = () => {
   const imagePath = 'https://res.cloudinary.com/dv54qhjnt/image/upload/v1712097910/salmon_dinner_qkzoe1.jpg'
   return (
     <motion.div 
-        className='card card-sm my-10 md:my-24 w-5/6 lg:w-96 bg-base-100 shadow-xl h-[560px] max-w-[400px]'
+        className='card card-sm my-10 md:my-12 w-5/6 lg:w-96 bg-base-100 shadow-xl h-[560px] max-w-[400px]'
         initial={{
             opacity: 0,
             scale: 0.8

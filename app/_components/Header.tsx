@@ -35,7 +35,7 @@ const Header = ({ userId }: HeaderProps) => {
   }, [meals, wiggleCount]);
 
   return (
-    <nav className="navbar flex-col md:flex-row w-full justify-around lg:px-16 lg:w-3/4 2xl:w-2/3">
+    <nav className="navbar flex-col md:flex-row w-full justify-around lg:px-16 xl:w-3/4 2xl:w-2/3">
         <div className='flex md:hidden justify-center items-center w-full mb-2 px-4'>
             <div className='w-full'>
                 <br />

@@ -38,47 +38,49 @@ const handleSubmit = async (event: React.FormEvent) => {
 };
 
   return (
-    <div className="modal-box max-w-none w-4/5 md:w-1/2 xl:w-4/12 h-[90%]">
+    <div className="modal-box flex flex-col overflow-hidden p-0 max-w-none w-4/5 md:w-1/2 xl:w-4/12 h-[90%]">
         <form className='mb-4' method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>✕</button>
         </form>
-        <figure className="w-full h-2/5">
-            <img className="w-full h-full object-cover" src={meal.imagePath} alt="" />
-        </figure>
-        <form onSubmit={handleSubmit}>
-            <div className='flex flex-col gap-2'>
-                <h2 className='text-xl font-bold mt-4'>{meal.mainTitle}</h2>
-                <h3 className='text-lg'>{meal.secondaryTitle}</h3>
-                <div className='my-1 lg:my-2'>
-                    <ul className='flex flex-wrap gap-2 lg:gap-0'>
-                        {meal.tags.map((tag) => 
-                            <li key={uuidv4()} className='badge mx-0 lg:mx-1 h-6 bg-accent border-none font-semibold'>{tag}</li>
-                        )}
-                    </ul>
-                </div>
-                <div className='max-w-[450px]'>
-                    <h3 className='font-semibold text-md lg:text-lg'>Ingredients</h3>
-                    <ul className='flex flex-col flex-wrap text-sm list-none mx-2 lg:mx-4 my-2 max-h-32'>
-                        {meal.ingredients.map((ingredient) => 
-                            <li key={uuidv4()} className='text-md lg:text-[1rem] my-0 lg:my-1' style={{ pageBreakInside: 'avoid', breakInside: 'avoid-column' }}>
-                                {ingredient}
-                            </li>
-                        )}
-                    </ul>
-                </div>
-                <div className='flex flex-col'>
-                    <label className="flex flex-col gap-1">
-                        <div className="label py-1">
-                            <span>notes</span>
+        <div className='flex-1 min-h-0 overflow-y-auto my-4 px-6 py-2'>
+            <figure className="w-full h-2/5">
+                <img className="w-full h-full object-cover" src={meal.imagePath} alt="" />
+            </figure>
+            <form onSubmit={handleSubmit}>
+                <div className='flex flex-col gap-2'>
+                    <h2 className='text-xl font-bold mt-4'>{meal.mainTitle}</h2>
+                    <h3 className='text-lg'>{meal.secondaryTitle}</h3>
+                    <div className='my-1 lg:my-2'>
+                        <ul className='flex flex-wrap gap-x-2 gap-y-2.5'>
+                            {meal.tags.map((tag) => 
+                                <li key={uuidv4()} className='badge h-6 bg-accent border-none font-semibold'>{tag}</li>
+                            )}
+                        </ul>
+                    </div>
+                    <div className='max-w-[450px]'>
+                        <h3 className='font-semibold text-md lg:text-lg'>Ingredients</h3>
+                        <ul className='flex flex-col flex-wrap text-sm list-none mx-2 lg:mx-4 my-2 max-h-32'>
+                            {meal.ingredients.map((ingredient) => 
+                                <li key={uuidv4()} className='text-md lg:text-[1rem] my-0 lg:my-1' style={{ pageBreakInside: 'avoid', breakInside: 'avoid-column' }}>
+                                    {ingredient}
+                                </li>
+                            )}
+                        </ul>
+                    </div>
+                    <div className='flex flex-col'>
+                        <label className="flex flex-col gap-1">
+                            <div className="label py-1">
+                                <span>notes</span>
+                            </div>
+                            <textarea className="textarea w-full h-24" id='meal_modal_notes' value={notes} onChange={handleChange}></textarea>
+                        </label>
+                        <div className='flex justify-end mt-6'>
+                            <button type='submit' className='btn btn-primary w-24' disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
                         </div>
-                        <textarea className="textarea h-24" id='meal_modal_notes' value={notes} onChange={handleChange}></textarea>
-                    </label>
-                    <div className='flex justify-end mt-6'>
-                        <button type='submit' className='btn btn-primary w-24' disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
     );
 };

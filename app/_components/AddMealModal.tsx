@@ -148,106 +148,109 @@ useEffect(() => {
   };
 
   return (
-    <div className="modal-box shadow-2xlDark max-w-none w-4/5 md:w-2/3 xl:w-4/12 h-full max-h-none lg:h-4/5">
+    <div className="modal-box flex flex-col overflow-hidden p-0 shadow-2xlDark max-w-none w-4/5 md:w-2/3 xl:w-4/12">
         <form className='mb-4' method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeAddMealModal}>✕</button>
         </form>
-        <div className="flex justify-center text-lg font-bold mb-6">
-          <h1>add new meal</h1>
-        </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='flex flex-col mb-4'>
-            <label className="input flex items-center gap-2">
-              meal name
-              <input type="text" className="grow" id="mainTitle" {...register("mainTitle", { required: true, maxLength: 30 })}/>
-              {errors.mainTitle && errors.mainTitle.type === "required" && <span className='text-error-red'>This is required</span>}
-              {errors.mainTitle && errors.mainTitle.type === "maxLength" && <span className='text-error-red'>Max length exceeded</span> }
-            </label>
-          </div>
-          <div className='flex flex-col mb-4'>
-            <label className="input flex items-center gap-2">
-              description
-              <input type="text" className="grow" id="secondaryTitle" {...register("secondaryTitle", { required: true, maxLength: 60 })}/>
-                {errors.secondaryTitle && errors.secondaryTitle.type === "required" && <span className='text-error-red'>This is required</span>}
-                {errors.secondaryTitle && errors.secondaryTitle.type === "maxLength" && <span className='text-error-red'>Max length exceeded</span> }
-            </label>
-          </div>
-          <div className='flex flex-col mb-4'>
-            <label className="input flex items-center gap-2">
-              ingredients
-              <input type="text" className="grow" id="ingredient" onKeyDown={handleKeyPress}/>
-              <button type='button' className='btn btn-accent btn-sm' onClick={addIngredient}>add</button>
-            </label>
-            {errors.ingredients && errors.ingredients.type === "max" && <span className='text-error-red p-2'>Maximum ingredients exceeded</span>}
-            <div className='flex justify-start ml-4 mt-4'>
-             <ul style={{ columnCount: numberOfColumns, columnGap: `${columnGap}px`, width: `${totalWidth}px` }}>
-                {newMealIngredients.map((ingredient, index) =>
-                <div className='w-full flex justify-between p-1' key={uuidv4()}>
-                  <li>{ingredient}</li>
-                  <button className='btn btn-xs btn-accent opacity-60' onClick={() => removeIngredient(index)}>X</button>
-                </div>)}
-              </ul>
+        <div className='flex-1 min-h-0 overflow-y-auto my-4 px-6 py-2'>
+            <div className="flex justify-center text-lg font-bold mb-6">
+              <h1>add new meal</h1>
             </div>
-          </div>
-          <div className='flex flex-col mb-4' ref={tagsRef}>
-            <div
-              className='input flex items-center flex-wrap gap-1 cursor-pointer min-h-12 h-auto py-2'
-              onClick={() => setTagsOpen(prev => !prev)}
-            >
-              {tags.length === 0 && <span className='text-gray-400'>Select tags...</span>}
-              {tags.map(tag => (
-                <span key={tag.value} className='badge badge-primary gap-1'>
-                  {tag.label}
-                  <button
-                    type='button'
-                    className='text-xs'
-                    onClick={(e) => { e.stopPropagation(); toggleTag(tag); }}
-                  >
-                    x
-                  </button>
-                </span>
-              ))}
-            </div>
-            {tagsOpen && (
-              <ul className='menu bg-base-100 shadow-lg rounded-box mt-1 max-h-48 overflow-y-auto flex-nowrap z-10'>
-                {mealTags.map(tag => (
-                  <li key={tag.value}>
-                    <label className='flex items-center gap-2 cursor-pointer'>
-                      <input
-                        type='checkbox'
-                        className='checkbox checkbox-sm checkbox-primary'
-                        checked={tags.some(t => t.value === tag.value)}
-                        onChange={() => toggleTag(tag)}
-                      />
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className='flex flex-col mb-4'>
+                <label className="input w-full flex items-center gap-2">
+                  meal name
+                  <input type="text" className="grow" id="mainTitle" {...register("mainTitle", { required: true, maxLength: 30 })}/>
+                  {errors.mainTitle && errors.mainTitle.type === "required" && <span className='text-error-red'>This is required</span>}
+                  {errors.mainTitle && errors.mainTitle.type === "maxLength" && <span className='text-error-red'>Max length exceeded</span> }
+                </label>
+              </div>
+              <div className='flex flex-col mb-4'>
+                <label className="input w-full flex items-center gap-2">
+                  description
+                  <input type="text" className="grow" id="secondaryTitle" {...register("secondaryTitle", { required: true, maxLength: 60 })}/>
+                    {errors.secondaryTitle && errors.secondaryTitle.type === "required" && <span className='text-error-red'>This is required</span>}
+                    {errors.secondaryTitle && errors.secondaryTitle.type === "maxLength" && <span className='text-error-red'>Max length exceeded</span> }
+                </label>
+              </div>
+              <div className='flex flex-col mb-4'>
+                <label className="input w-full flex items-center gap-2">
+                  ingredients
+                  <input type="text" className="grow" id="ingredient" onKeyDown={handleKeyPress}/>
+                  <button type='button' className='btn btn-accent btn-sm' onClick={addIngredient}>add</button>
+                </label>
+                {errors.ingredients && errors.ingredients.type === "max" && <span className='text-error-red p-2'>Maximum ingredients exceeded</span>}
+                {newMealIngredients.length > 0 &&
+                <div className='flex justify-start ml-4 mt-4'>
+                 <ul style={{ columnCount: numberOfColumns, columnGap: `${columnGap}px`, width: `${totalWidth}px` }}>
+                    {newMealIngredients.map((ingredient, index) =>
+                    <div className='w-full flex justify-between p-1' key={uuidv4()}>
+                      <li>{ingredient}</li>
+                      <button className='btn btn-xs btn-accent opacity-60' onClick={() => removeIngredient(index)}>X</button>
+                    </div>)}
+                  </ul>
+                </div>}
+              </div>
+              <div className='flex flex-col mb-4' ref={tagsRef}>
+                <div
+                  className='input w-full flex items-center flex-wrap gap-1 cursor-pointer min-h-12 h-auto py-2'
+                  onClick={() => setTagsOpen(prev => !prev)}
+                >
+                  {tags.length === 0 && <span className='text-gray-400'>Select tags...</span>}
+                  {tags.map(tag => (
+                    <span key={tag.value} className='badge badge-primary gap-1'>
                       {tag.label}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div className='flex flex-col mb-4'>
-            <label htmlFor="mealImage" className='mb-2'>image <span className='text-sm text-gray-500'>(optional, we'll generate one if you skip this)</span></label>
-            <input 
-                id="mealImage"
-                type="file"
-                accept=".jpg, .png, .gif, .jpeg"
-                className="file-input file-input-secondary file-input-sm w-full max-w-xs"
-                onChange={handleImageChange}
-              />
-          </div>
-          <div className='flex flex-col'>
-            <label className="flex flex-col gap-1">
-                <div className="label py-1">
-                    <span>notes</span>
+                      <button
+                        type='button'
+                        className='text-xs'
+                        onClick={(e) => { e.stopPropagation(); toggleTag(tag); }}
+                      >
+                        x
+                      </button>
+                    </span>
+                  ))}
                 </div>
-                <textarea className="textarea h-24" id='meal_modal_notes' onChange={handleChange}></textarea>
-            </label>
-            <div className='flex justify-end mt-6'>
-                <button type='submit' className='btn btn-primary min-w-24' disabled={addMealMutation.isPending}>{addMealMutation.isPending ? (imageFile ? 'saving...' : 'generating image...') : 'save'}</button>
-            </div>
-          </div>
-        </form>
+                {tagsOpen && (
+                  <ul className='menu bg-base-100 shadow-lg rounded-box mt-1 max-h-48 overflow-y-auto flex-nowrap z-10'>
+                    {mealTags.map(tag => (
+                      <li key={tag.value}>
+                        <label className='flex items-center gap-2 cursor-pointer'>
+                          <input
+                            type='checkbox'
+                            className='checkbox checkbox-sm checkbox-primary'
+                            checked={tags.some(t => t.value === tag.value)}
+                            onChange={() => toggleTag(tag)}
+                          />
+                          {tag.label}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className='flex flex-col mb-4'>
+                <label htmlFor="mealImage" className='mb-2'>image <span className='text-sm text-gray-500'>(optional, we'll generate one if you skip this)</span></label>
+                <input 
+                    id="mealImage"
+                    type="file"
+                    accept=".jpg, .png, .gif, .jpeg"
+                    className="file-input file-input-secondary file-input-sm w-full"
+                    onChange={handleImageChange}
+                  />
+              </div>
+              <div className='flex flex-col'>
+                <label className="flex flex-col gap-1">
+                    <div className="label py-1">
+                        <span>notes</span>
+                    </div>
+                    <textarea className="textarea w-full h-24" id='meal_modal_notes' onChange={handleChange}></textarea>
+                </label>
+                <div className='flex justify-end mt-6'>
+                    <button type='submit' className='btn btn-primary min-w-24' disabled={addMealMutation.isPending}>{addMealMutation.isPending ? (imageFile ? 'saving...' : 'generating image...') : 'save'}</button>
+                </div>
+              </div>
+            </form>
+        </div>
     </div>
   );
 };

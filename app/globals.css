@@ -18,15 +18,15 @@
 }
 
 @utility grid-cols-mealCards {
-  grid-template-columns: repeat(1, minmax(250px, 1fr));
+  grid-template-columns: repeat(1, minmax(250px, 384px));
 }
 
 @utility grid-cols-mealCardsMd {
-  grid-template-columns: repeat(2, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, minmax(250px, 384px));
 }
 
 @utility grid-cols-mealCardsXl {
-  grid-template-columns: repeat(3, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, minmax(250px, 384px));
 }
 
 /* Tailwind v4 no longer gives buttons a pointer cursor; keep the v3 behavior */

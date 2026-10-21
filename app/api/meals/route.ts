@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/app/_lib/prisma'
-import { generateMealImage } from '@/app/_lib/meal-image'
+import { DEFAULT_MEAL_IMAGE, generateMealImage } from '@/app/_lib/meal-image'
+import { DEMO_MEALS, DEMO_USER_ID } from '@/app/_lib/demo'
 
 // Image generation can take several seconds
 export const maxDuration = 60
@@ -15,7 +16,9 @@ export async function GET() {
     where: { userId },
     orderBy: { id: 'desc' },
   })
-  return NextResponse.json(meals)
+  return NextResponse.json(
+    userId === DEMO_USER_ID ? [...meals, ...DEMO_MEALS] : meals
+  )
 }
 
 export async function POST(request: NextRequest) {
@@ -32,8 +35,12 @@ export async function POST(request: NextRequest) {
       userId,
       mainTitle,
       secondaryTitle,
+      // The demo account gets the default image so visitors can't spend credits
       imagePath:
-        imagePath || (await generateMealImage(mainTitle, secondaryTitle)),
+        imagePath ||
+        (userId === DEMO_USER_ID
+          ? DEFAULT_MEAL_IMAGE
+          : await generateMealImage(mainTitle, secondaryTitle)),
       tags,
       ingredients,
       notes,
