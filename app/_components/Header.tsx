@@ -45,7 +45,9 @@ const Header = ({ userId }: HeaderProps) => {
             </div>
             <div className='w-full flex md:hidden justify-end'>
                 <Show when="signed-out">
-                    <SignInButton />
+                    <SignInButton>
+                        <button className='btn btn-primary btn-outline whitespace-nowrap'>sign in</button>
+                    </SignInButton>
                 </Show>
                 <Show when="signed-in">
                     <UserButton />
@@ -56,7 +58,7 @@ const Header = ({ userId }: HeaderProps) => {
             <div className='flex h-full w-5/6 md:w-full items-center'>
                 {pathname === '/' &&
                     <motion.button 
-                        className="btn btn-primary text-md xl:text-lg w-3/5 md:w-2/5 lg:w-3/5 xl:w-2/5" 
+                        className="btn btn-primary whitespace-nowrap px-3 text-md xl:text-lg w-3/5 md:w-2/5 lg:w-3/5 xl:w-2/5" 
                         disabled={!userId || meals.length >= maxDemoMealCount} 
                         onClick={() => setShowAddModal(true)}
                         animate={{ 
@@ -81,12 +83,14 @@ const Header = ({ userId }: HeaderProps) => {
                 <h1 className="btn btn-ghost text-[2.2rem]">meal spark</h1>
             </div>
             <div className='flex h-full w-full justify-end items-center'>
-                <div className='md:mx-8'>
+                <div className='md:mr-4'>
                     <SearchBar userId={userId}/>
                 </div>
                 <div className='hidden md:flex'>
                     <Show when="signed-out">
-                        <SignInButton />
+                        <SignInButton>
+                            <button className='btn btn-primary btn-outline whitespace-nowrap'>sign in</button>
+                        </SignInButton>
                     </Show>
                     <Show when="signed-in">
                         <UserButton />

@@ -4,6 +4,13 @@
   themes: emerald --default;
 }
 
+/* Restore daisyUI 4's 3rem button/input height (daisyUI 5 defaults to 2.5rem) */
+@plugin 'daisyui/theme' {
+  name: 'emerald';
+  default: true;
+  --size-field: 0.3rem;
+}
+
 @theme {
   --color-error-red: #bd2b2b;
   --shadow-2xlDark: 0 35px 60px -15px rgba(0, 0, 0, 0.6);
@@ -38,12 +45,6 @@
 
 * {
   font-family: var(--font-family);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-  }
 }
 
 html {
