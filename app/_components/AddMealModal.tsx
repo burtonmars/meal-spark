@@ -227,7 +227,7 @@ useEffect(() => {
             )}
           </div>
           <div className='flex flex-col mb-4'>
-            <label htmlFor="mealImage" className='mb-2'>image</label>
+            <label htmlFor="mealImage" className='mb-2'>image <span className='text-sm text-gray-500'>(optional, we'll generate one if you skip this)</span></label>
             <input 
                 id="mealImage"
                 type="file"
@@ -244,7 +244,7 @@ useEffect(() => {
                 <textarea className="textarea h-24" id='meal_modal_notes' onChange={handleChange}></textarea>
             </label>
             <div className='flex justify-end mt-6'>
-                <button type='submit' className='btn btn-primary w-24' disabled={addMealMutation.isPending}>{addMealMutation.isPending ? 'saving...' : 'save'}</button>
+                <button type='submit' className='btn btn-primary min-w-24' disabled={addMealMutation.isPending}>{addMealMutation.isPending ? (imageFile ? 'saving...' : 'generating image...') : 'save'}</button>
             </div>
           </div>
         </form>

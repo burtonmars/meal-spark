@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/app/_lib/prisma'
+import { generateMealImage } from '@/app/_lib/meal-image'
+
+// Image generation can take several seconds
+export const maxDuration = 60
 
 export async function GET() {
   const { userId } = await auth()
@@ -29,8 +33,7 @@ export async function POST(request: NextRequest) {
       mainTitle,
       secondaryTitle,
       imagePath:
-        imagePath ||
-        'https://res.cloudinary.com/dv54qhjnt/image/upload/v1713567949/pexels-yente-van-eynde-1263034-2403392_nv2ihw.jpg',
+        imagePath || (await generateMealImage(mainTitle, secondaryTitle)),
       tags,
       ingredients,
       notes,
