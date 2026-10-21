@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import AddMealModal from './AddMealModal';
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { Show, SignInButton, UserButton } from '@clerk/nextjs';
 import { usePathname } from 'next/navigation'
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -44,12 +44,12 @@ const Header = ({ userId }: HeaderProps) => {
                 <a className="btn btn-ghost text-2xl">meal spark</a>
             </div>
             <div className='w-full flex md:hidden justify-end'>
-                <SignedOut>
+                <Show when="signed-out">
                     <SignInButton />
-                </SignedOut>
-                <SignedIn>
+                </Show>
+                <Show when="signed-in">
                     <UserButton />
-                </SignedIn>
+                </Show>
             </div>
         </div>
         <div className='flex w-full justify-between my-4 px-4'>
@@ -85,12 +85,12 @@ const Header = ({ userId }: HeaderProps) => {
                     <SearchBar userId={userId}/>
                 </div>
                 <div className='hidden md:flex'>
-                    <SignedOut>
+                    <Show when="signed-out">
                         <SignInButton />
-                    </SignedOut>
-                    <SignedIn>
+                    </Show>
+                    <Show when="signed-in">
                         <UserButton />
-                    </SignedIn>
+                    </Show>
                 </div>
             </div>
         </div>

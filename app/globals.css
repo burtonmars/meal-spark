@@ -1,8 +1,34 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@import url('https: //fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+@plugin 'daisyui' {
+  themes: emerald --default;
+}
+
+@theme {
+  --color-error-red: #bd2b2b;
+  --shadow-2xlDark: 0 35px 60px -15px rgba(0, 0, 0, 0.6);
+  --breakpoint-2xl: 2036px;
+}
+
+@utility grid-cols-mealCards {
+  grid-template-columns: repeat(1, minmax(250px, 1fr));
+}
+
+@utility grid-cols-mealCardsMd {
+  grid-template-columns: repeat(2, minmax(250px, 1fr));
+}
+
+@utility grid-cols-mealCardsXl {
+  grid-template-columns: repeat(3, minmax(250px, 1fr));
+}
+
+/* Tailwind v4 no longer gives buttons a pointer cursor; keep the v3 behavior */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;

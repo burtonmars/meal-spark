@@ -2,38 +2,35 @@
 
 import { SignInButton, useSignIn } from '@clerk/nextjs'
 import React from 'react'
-import { Image } from 'cloudinary-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation'
 
 const LandingPage = () => {
-    const { isLoaded, signIn, setActive } = useSignIn();
+    const { signIn } = useSignIn();
     const router = useRouter();
 
     const handleDemoLogin = async () => {
-        if (!isLoaded) return
-        
-        try {
-            const signInAttempt = await signIn.create({
-                identifier: 'mealspark.demo@yahoo.com',
-                password: 'Mealspark2024!',
-            });
+        const { error } = await signIn.password({
+            identifier: 'mealspark.demo@yahoo.com',
+            password: 'Mealspark2024!',
+        });
+        if (error) {
+            console.error(JSON.stringify(error, null, 2))
+            return
+        }
 
-            if (signInAttempt.status === 'complete') {
-                await setActive({ session: signInAttempt.createdSessionId })
-                router.refresh()
-            } else {
-                console.error(JSON.stringify(signInAttempt, null, 2))
-            }
-        } catch (err: any) {
-            console.error(JSON.stringify(err, null, 2))
-        };
+        if (signIn.status === 'complete') {
+            await signIn.finalize()
+            router.refresh()
+        } else {
+            console.error('Demo sign in not complete:', signIn.status)
+        }
     };
 
   const imagePath = 'https://res.cloudinary.com/dv54qhjnt/image/upload/v1712097910/salmon_dinner_qkzoe1.jpg'
   return (
     <motion.div 
-        className='card card-compact my-10 md:my-24 w-5/6 lg:w-96 bg-base-100 shadow-xl h-[560px] max-w-[400px]'
+        className='card card-sm my-10 md:my-24 w-5/6 lg:w-96 bg-base-100 shadow-xl h-[560px] max-w-[400px]'
         initial={{
             opacity: 0,
             scale: 0.8
@@ -43,7 +40,7 @@ const LandingPage = () => {
             scale: 1
         }}>
        <figure className="w-full h-1/2">
-            <Image className="w-full h-full object-cover" cloudName="dv54qhjnt" publicId={imagePath}/>
+            <img className="w-full h-full object-cover" src={imagePath} alt="" />
         </figure>
         <div className='h-1/2 my-8 w-full flex flex-col justify-center items-center text-center'>
             <div className="card-body flex flex-col justify-between h-[40%]">
