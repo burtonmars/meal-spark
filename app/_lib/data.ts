@@ -24,9 +24,11 @@ export async function updateMeal(meal: Meal): Promise<void> {
   const { userId } = await auth()
   if (userId) {
     try {
-      await prisma.meal.update({
+      // Scoping by userId keeps users from editing someone else's meal
+      await prisma.meal.updateMany({
         where: {
           id: meal.id,
+          userId: userId,
         },
         data: {
           mainTitle: meal.mainTitle,
@@ -74,13 +76,19 @@ export async function saveNewMeal(meal: Meal): Promise<void> {
 }
 
 export async function deleteMeal(mealId: number): Promise<void> {
-  try {
-    await prisma.meal.delete({
-      where: {
-        id: mealId,
-      },
-    })
-  } catch (error) {
-    console.error('Error deleting meal:', error)
+  const { userId } = await auth()
+  if (userId) {
+    try {
+      await prisma.meal.deleteMany({
+        where: {
+          id: mealId,
+          userId: userId,
+        },
+      })
+    } catch (error) {
+      console.error('Error deleting meal:', error)
+    }
+  } else {
+    console.error('Error deleting meal: User not signed in')
   }
 }
