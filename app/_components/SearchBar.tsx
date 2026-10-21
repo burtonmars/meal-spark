@@ -49,7 +49,7 @@ const SearchBar = ({ userId }: SearchBarProps) => {
         <input
             type="text"
             placeholder="Search"
-            className="input input-bordered w-full"
+            className="input w-full"
             onChange={inputHandler}
             disabled={!userId}
             onFocus={() => setIsDropdownVisible(true)}

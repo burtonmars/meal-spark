@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Image } from 'cloudinary-react';
  
 import ViewMealModal from './ViewMealModal';
 import { Meal } from '../_lib/definitions';
@@ -41,7 +40,7 @@ const MealCard = ({meal, deleteMeal, focussedTag}: MealCardProps) => {
     
   return (
     <motion.div 
-        className="card card-compact mb-12 md:mb-0 mx-12 w-5/6 lg:w-96 bg-base-100 shadow-xl h-[550px]"
+        className="card card-sm mb-12 md:mb-0 mx-12 w-5/6 lg:w-96 bg-base-100 shadow-xl h-[550px]"
         initial={{
             opacity: 0,
             scale: 0.8
@@ -55,7 +54,7 @@ const MealCard = ({meal, deleteMeal, focussedTag}: MealCardProps) => {
         }}
         >
         <figure className="w-full h-1/2 cursor-pointer" onClick={() => setShowModal(true)}>
-            <Image className="w-full h-full object-cover" cloudName="dv54qhjnt" publicId={meal.imagePath}/>
+            <img className="w-full h-full object-cover" src={meal.imagePath} alt="" />
         </figure>
         <div className="card-body flex flex-col justify-between h-2/5">
             <div className="truncate">

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Image } from 'cloudinary-react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Meal } from '../_lib/definitions';
@@ -44,7 +43,7 @@ const handleSubmit = async (event: React.FormEvent) => {
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>✕</button>
         </form>
         <figure className="w-full h-2/5">
-            <Image className="w-full h-full object-cover" cloudName="dv54qhjnt" publicId={meal.imagePath}/>
+            <img className="w-full h-full object-cover" src={meal.imagePath} alt="" />
         </figure>
         <form onSubmit={handleSubmit}>
             <div className='flex flex-col gap-2'>
@@ -68,11 +67,11 @@ const handleSubmit = async (event: React.FormEvent) => {
                     </ul>
                 </div>
                 <div className='flex flex-col'>
-                    <label className="form-control">
-                        <div className="label">
-                            <span className="label-text">notes</span>
+                    <label className="flex flex-col gap-1">
+                        <div className="label py-1">
+                            <span>notes</span>
                         </div>
-                        <textarea className="textarea textarea-bordered h-24" id='meal_modal_notes' value={notes} onChange={handleChange}></textarea>
+                        <textarea className="textarea h-24" id='meal_modal_notes' value={notes} onChange={handleChange}></textarea>
                     </label>
                     <div className='flex justify-end mt-6'>
                         <button type='submit' className='btn btn-primary w-24' disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>

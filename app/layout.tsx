@@ -1,14 +1,11 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Analytics } from "@vercel/analytics/react"
-import { ClerkProvider } from '@clerk/nextjs'
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { ClerkProvider, Show } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server';
 
 import './globals.css'
 
-import { Meal } from './_lib/definitions';
-import { fetchMeals } from './_lib/data';
 import Header from './_components/Header';
 import Footer from './_components/Footer';
 import LandingPage from './_components/LandingPage';
@@ -29,8 +26,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const meals: Meal[] = await fetchMeals();
-  const { userId } = auth();
+  const { userId } = await auth();
 
   return (
     <html lang="en" data-theme='cmyk'>
@@ -42,14 +38,14 @@ export default async function RootLayout({
                 <Header userId={userId}/>
               </div>
               <div>
-                <SignedIn>
+                <Show when="signed-in">
                   {children}
-                </SignedIn>
-                <SignedOut>
+                </Show>
+                <Show when="signed-out">
                   <div className='flex justify-center items-center w-full h-full'>
                     <LandingPage />
                   </div>
-                </SignedOut>
+                </Show>
               </div>
               <div className='h-full w-full mt-10'>
                   <Footer />

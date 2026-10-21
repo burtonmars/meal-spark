@@ -157,7 +157,7 @@ useEffect(() => {
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className='flex flex-col mb-4'>
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input flex items-center gap-2">
               meal name
               <input type="text" className="grow" id="mainTitle" {...register("mainTitle", { required: true, maxLength: 30 })}/>
               {errors.mainTitle && errors.mainTitle.type === "required" && <span className='text-error-red'>This is required</span>}
@@ -165,7 +165,7 @@ useEffect(() => {
             </label>
           </div>
           <div className='flex flex-col mb-4'>
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input flex items-center gap-2">
               description
               <input type="text" className="grow" id="secondaryTitle" {...register("secondaryTitle", { required: true, maxLength: 60 })}/>
                 {errors.secondaryTitle && errors.secondaryTitle.type === "required" && <span className='text-error-red'>This is required</span>}
@@ -173,7 +173,7 @@ useEffect(() => {
             </label>
           </div>
           <div className='flex flex-col mb-4'>
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input flex items-center gap-2">
               ingredients
               <input type="text" className="grow" id="ingredient" onKeyDown={handleKeyPress}/>
               <button type='button' className='btn btn-accent btn-sm' onClick={addIngredient}>add</button>
@@ -191,7 +191,7 @@ useEffect(() => {
           </div>
           <div className='flex flex-col mb-4' ref={tagsRef}>
             <div
-              className='input input-bordered flex items-center flex-wrap gap-1 cursor-pointer min-h-12 h-auto py-2'
+              className='input flex items-center flex-wrap gap-1 cursor-pointer min-h-12 h-auto py-2'
               onClick={() => setTagsOpen(prev => !prev)}
             >
               {tags.length === 0 && <span className='text-gray-400'>Select tags...</span>}
@@ -232,16 +232,16 @@ useEffect(() => {
                 id="mealImage"
                 type="file"
                 accept=".jpg, .png, .gif, .jpeg"
-                className="file-input file-input-bordered file-input-secondary file-input-sm w-full max-w-xs"
+                className="file-input file-input-secondary file-input-sm w-full max-w-xs"
                 onChange={handleImageChange}
               />
           </div>
           <div className='flex flex-col'>
-            <label className="form-control">
-                <div className="label">
-                    <span className="label-text">notes</span>
+            <label className="flex flex-col gap-1">
+                <div className="label py-1">
+                    <span>notes</span>
                 </div>
-                <textarea className="textarea textarea-bordered h-24" id='meal_modal_notes' onChange={handleChange}></textarea>
+                <textarea className="textarea h-24" id='meal_modal_notes' onChange={handleChange}></textarea>
             </label>
             <div className='flex justify-end mt-6'>
                 <button type='submit' className='btn btn-primary w-24' disabled={addMealMutation.isPending}>{addMealMutation.isPending ? 'saving...' : 'save'}</button>

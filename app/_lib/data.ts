@@ -1,13 +1,11 @@
 'use server'
 
 import { auth } from '@clerk/nextjs/server'
-import { PrismaClient } from '@prisma/client'
 import { Meal } from './definitions'
-
-const prisma = new PrismaClient()
+import { prisma } from './prisma'
 
 export async function fetchMeals() {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (userId) {
     const meals = await prisma.meal.findMany({
       where: {
@@ -23,7 +21,7 @@ export async function fetchMeals() {
 }
 
 export async function updateMeal(meal: Meal): Promise<void> {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (userId) {
     try {
       await prisma.meal.update({
@@ -48,7 +46,7 @@ export async function updateMeal(meal: Meal): Promise<void> {
 }
 
 export async function saveNewMeal(meal: Meal): Promise<void> {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!meal.imagePath) {
     meal.imagePath =
       'https://res.cloudinary.com/dv54qhjnt/image/upload/v1713567949/pexels-yente-van-eynde-1263034-2403392_nv2ihw.jpg'
